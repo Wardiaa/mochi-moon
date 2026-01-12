@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Home as HomeIcon, Coffee, Bell, Cherry, Gamepad2, Sparkles } from "lucide-react";
+import { Plus, Home as HomeIcon, Coffee, Cherry, Gamepad2, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 import { TaskCard } from "../components/TaskCard";
 import { TaskFormDialog } from "../components/TaskFormDialog";
@@ -133,13 +133,7 @@ export default function Home() {
               tooltip="Recipes" 
               href="/recipes"
             />
-            <div className="mt-auto">
-              <NavButton 
-                icon={<Bell size={24} />} 
-                tooltip="Notifications" 
-                href="/"
-              />
-            </div>
+          
           </div>
 
           {/* Main Content Area */}
