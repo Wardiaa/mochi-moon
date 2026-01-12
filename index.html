@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style>
+      /* Silkscreen Font (Pixel font for body) */
+      @font-face {
+        font-family: 'Silkscreen';
+        src: url('/fonts/Silkscreen-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      
+      @font-face {
+        font-family: 'Silkscreen';
+        src: url('/fonts/Silkscreen-Bold.ttf') format('truetype');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      
+      /* Press Start 2P Font (for headings) */
+      @font-face {
+        font-family: 'Press Start 2P';
+        src: url('/fonts/PressStart2P-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      
+      /* Fallback while fonts load */
+      body {
+        font-family: 'Courier New', monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
