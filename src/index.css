@@ -44,13 +44,18 @@
 
 @layer base {
   body {
-    @apply bg-orange-50/50 text-[#8B6F47] antialiased overflow-hidden;
+    @apply bg-[#FFF8F0] text-[#8B6F47] antialiased;
     font-family: 'Silkscreen', 'Courier New', monospace;
     background-image: 
       radial-gradient(#D7C4FF 1px, transparent 1px),
       radial-gradient(#D7C4FF 1px, transparent 1px);
     background-size: 20px 20px;
     background-position: 0 0, 10px 10px;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
   }
   
   /* Custom Scrollbar for the retro feel */
@@ -69,6 +74,15 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Press Start 2P', 'Courier New', monospace;
     @apply text-[#8B6F47];
+  }
+  
+  /* Window draggable area */
+  .draggable {
+    -webkit-app-region: drag;
+  }
+  
+  .non-draggable {
+    -webkit-app-region: no-drag;
   }
 }
 
@@ -113,6 +127,37 @@
   
   .font-pixel {
     font-family: 'Silkscreen', 'Courier New', monospace !important;
+  }
+  
+  /* Window resize handles */
+  .window-resize-handle {
+    position: absolute;
+    background: transparent;
+    z-index: 1000;
+  }
+  
+  .resize-right {
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: ew-resize;
+  }
+  
+  .resize-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    cursor: ns-resize;
+  }
+  
+  .resize-corner {
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: nwse-resize;
   }
 }
 

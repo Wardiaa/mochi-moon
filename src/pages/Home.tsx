@@ -6,6 +6,16 @@ import { TaskFormDialog } from "../components/TaskFormDialog";
 import { useTasks } from "../lib/task-context";
 import type { Task } from "../lib/types";
 
+declare global {
+  interface Window {
+    electronAPI?: {
+      closeApp: () => void;
+      minimizeApp: () => void;
+      maximizeApp: () => void;
+    };
+  }
+}
+
 export default function Home() {
   const { tasks, isLoading, error, updateTask, deleteTask } = useTasks();
   
@@ -68,26 +78,47 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-[#4A4A4A] p-4 md:p-8 flex items-center justify-center font-pixel">
+    <div className="min-h-screen bg-[#FFF8F0] p-0 m-0 w-screen h-screen font-pixel">
       
-      {/* Main Window Container */}
-      <div className="w-full max-w-5xl h-[85vh] bg-[#FFF8F0] relative flex flex-col shadow-[10px_10px_0_0_#222] border-4 border-[#8B6F47] overflow-hidden rounded-sm">
+      {/* Window Resize Handles */}
+      <div className="window-resize-handle resize-right"></div>
+      <div className="window-resize-handle resize-bottom"></div>
+      <div className="window-resize-handle resize-corner"></div>
+      
+      {/* Main Window Container - Now it's the entire window */}
+      <div className="w-full h-full bg-[#FFF8F0] flex flex-col overflow-hidden">
         
-        {/* Title Bar */}
-        <div className="h-12 bg-[#B4FFE6] border-b-4 border-[#8B6F47] flex items-center justify-between px-4 select-none cursor-grab active:cursor-grabbing">
+        {/* Title Bar with Window Controls */}
+        <div className="h-12 bg-[#B4FFE6] border-b-4 border-[#8B6F47] flex items-center justify-between px-4 select-none draggable">
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-[#8B6F47]" />
             <span className="font-display text-[#8B6F47] text-sm md:text-base tracking-tight pt-1">
               Mochi Moon Café Task Manager v1.0
             </span>
           </div>
-          <div className="flex gap-2">
-            <button className="w-6 h-6 bg-[#D7C4FF] border-2 border-[#8B6F47] hover:bg-white" />
+          <div className="flex gap-2 non-draggable">
+            {/* Minimize button */}
             <button 
-              className="w-6 h-6 bg-[#FFC4DD] border-2 border-[#8B6F47] hover:bg-red-400 flex items-center justify-center"
-              onClick={() => window.close()}
+              className="w-6 h-6 bg-[#B4FFE6] border-2 border-[#8B6F47] hover:bg-[#FFF4B4] flex items-center justify-center transition-colors"
+              onClick={() => window.electronAPI?.minimizeApp()}
             >
-              <span className="text-[#8B6F47] text-xs">x</span>
+              <span className="text-[#8B6F47] text-xs mb-2">_</span>
+            </button>
+            
+            {/* Maximize/Restore button */}
+            <button 
+              className="w-6 h-6 bg-[#D7C4FF] border-2 border-[#8B6F47] hover:bg-white flex items-center justify-center transition-colors"
+              onClick={() => window.electronAPI?.maximizeApp()}
+            >
+              <span className="text-[#8B6F47] text-xs">□</span>
+            </button>
+            
+            {/* Close button */}
+            <button 
+              className="w-6 h-6 bg-[#FFC4DD] border-2 border-[#8B6F47] hover:bg-red-400 flex items-center justify-center transition-colors"
+              onClick={() => window.electronAPI?.closeApp()}
+            >
+              <span className="text-[#8B6F47] text-xs">×</span>
             </button>
           </div>
         </div>
