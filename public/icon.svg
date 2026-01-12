@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Strawberry background -->
+  <circle cx="256" cy="256" r="240" fill="#FFC4DD"/>
+  
+  <!-- Mochi center -->
+  <circle cx="256" cy="256" r="160" fill="#FFF8F0" stroke="#8B6F47" stroke-width="8"/>
+  
+  <!-- Moon shape -->
+  <path d="M256 120 A120 120 0 0 1 256 360 A60 60 0 0 0 256 240" fill="#D7C4FF"/>
+  
+  <!-- Seeds -->
+  <circle cx="200" cy="200" r="12" fill="#8B6F47"/>
+  <circle cx="280" cy="180" r="12" fill="#8B6F47"/>
+  <circle cx="240" cy="280" r="12" fill="#8B6F47"/>
+  <circle cx="320" cy="240" r="12" fill="#8B6F47"/>
+  <circle cx="180" cy="320" r="12" fill="#8B6F47"/>
+  
+  <!-- Stem -->
+  <rect x="244" y="80" width="24" height="40" fill="#8B6F47"/>
+  <rect x="230" y="90" width="52" height="20" fill="#4ADE80" rx="4"/>
+</svg>

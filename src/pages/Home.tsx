@@ -6,16 +6,6 @@ import { TaskFormDialog } from "../components/TaskFormDialog";
 import { useTasks } from "../lib/task-context";
 import type { Task } from "../lib/types";
 
-declare global {
-  interface Window {
-    electronAPI?: {
-      closeApp: () => void;
-      minimizeApp: () => void;
-      maximizeApp: () => void;
-    };
-  }
-}
-
 export default function Home() {
   const { tasks, isLoading, error, updateTask, deleteTask } = useTasks();
   

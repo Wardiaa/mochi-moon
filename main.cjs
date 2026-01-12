@@ -5,6 +5,23 @@ const fs = require('fs');
 let mainWindow;
 
 function createWindow() {
+  // Get the correct icon path for current platform
+  const getIconPath = () => {
+    const platform = process.platform;
+    
+    if (platform === 'win32') {
+      // Windows: Use .ico
+      return path.join(__dirname, 'public', 'favicon.ico');
+    } else if (platform === 'darwin') {
+      // macOS: Try .icns first, then .png
+      const icnsPath = path.join(__dirname, 'public', 'favicon.icns');
+      return fs.existsSync(icnsPath) ? icnsPath : path.join(__dirname, 'public', 'favicon.png');
+    } else {
+      // Linux: Use .png
+      return path.join(__dirname, 'public', 'favicon.png');
+    }
+  };
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -14,12 +31,12 @@ function createWindow() {
     titleBarStyle: 'hidden',
     transparent: false,
     backgroundColor: '#FFF8F0',
+    icon: getIconPath(), // Set icon for current platform
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.cjs')
-    },
-    icon: path.join(__dirname, 'public/favicon.ico')
+    }
   });
 
   // Check if we're in development or production
@@ -28,27 +45,34 @@ function createWindow() {
   if (isDev) {
     // Development: Load from dev server
     mainWindow.loadURL('http://localhost:5173');
-    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
   } else {
     // Production: Load from dist folder
     const indexPath = path.join(__dirname, 'dist', 'index.html');
-    console.log('Loading from:', indexPath);
     
-    // Method 1: Use loadFile
     mainWindow.loadFile(indexPath).catch(err => {
       console.error('Failed to load index.html:', err);
       
-      // Method 2: Fallback to file URL
+      // Fallback to file URL
       const fileUrl = `file://${indexPath}`;
-      console.log('Trying file URL:', fileUrl);
       mainWindow.loadURL(fileUrl).catch(err2 => {
         console.error('Failed to load file URL:', err2);
       });
     });
   }
+
+  // Optional: Set window title
+  mainWindow.setTitle('Mochi Moon Café Task Manager');
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  // Set app name for macOS dock
+  if (process.platform === 'darwin') {
+    app.setName('Mochi Moon Task Manager');
+  }
+  
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

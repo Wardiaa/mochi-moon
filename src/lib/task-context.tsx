@@ -11,10 +11,16 @@ interface TaskContextType {
   refreshTasks: () => Promise<void>;
 }
 
-// Check if running in Electron
+// Single global declaration for electronAPI
 declare global {
   interface Window {
     electronAPI?: {
+      // Window controls
+      closeApp: () => void;
+      minimizeApp: () => void;
+      maximizeApp: () => void;
+      
+      // File I/O operations
       readTasks: () => Promise<any[]>;
       writeTasks: (tasks: any[]) => Promise<boolean>;
     };
@@ -31,46 +37,46 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Load tasks from local JSON file
- const loadTasks = useCallback(async () => {
-  try {
-    setIsLoading(true);
-    setError(null);
-    
-    let loadedTasks: Task[] = [];
-    
-    if (isElectron && window.electronAPI) {
-      // Use Electron's file system
-      loadedTasks = await window.electronAPI!.readTasks();
-    } else {
-      // Fallback to localStorage for web preview
-      const saved = localStorage.getItem('mochi-tasks');
-      loadedTasks = saved ? JSON.parse(saved) : [];
+  const loadTasks = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      let loadedTasks: Task[] = [];
+      
+      if (isElectron && window.electronAPI) {
+        // Use Electron's file system
+        loadedTasks = await window.electronAPI!.readTasks();
+      } else {
+        // Fallback to localStorage for web preview
+        const saved = localStorage.getItem('mochi-tasks');
+        loadedTasks = saved ? JSON.parse(saved) : [];
+      }
+      
+      setTasks(loadedTasks);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load tasks');
+      console.error('Error loading tasks:', err);
+    } finally {
+      setIsLoading(false);
     }
-    
-    setTasks(loadedTasks);
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Failed to load tasks');
-    console.error('Error loading tasks:', err);
-  } finally {
-    setIsLoading(false);
-  }
-}, []);
+  }, []);
 
   // Save tasks to local JSON file
   const saveTasks = useCallback(async (newTasks: Task[]) => {
-  try {
-    if (isElectron && window.electronAPI) {
-      // Use Electron's file system
-      await window.electronAPI!.writeTasks(newTasks);
-    } else {
-      // Fallback to localStorage for web preview
-      localStorage.setItem('mochi-tasks', JSON.stringify(newTasks));
+    try {
+      if (isElectron && window.electronAPI) {
+        // Use Electron's file system
+        await window.electronAPI!.writeTasks(newTasks);
+      } else {
+        // Fallback to localStorage for web preview
+        localStorage.setItem('mochi-tasks', JSON.stringify(newTasks));
+      }
+    } catch (err) {
+      console.error('Error saving tasks:', err);
+      throw err;
     }
-  } catch (err) {
-    console.error('Error saving tasks:', err);
-    throw err;
-  }
-}, []);
+  }, []);
 
   useEffect(() => {
     loadTasks();

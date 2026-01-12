@@ -60,25 +60,42 @@
       "preload.cjs",
       "package.json"
     ],
-
     "extraResources": [
-    {
-      "from": "public/fonts/",
-      "to": "fonts/",
-      "filter": ["**/*"]
-    }
-  ],
+      {
+        "from": "public/fonts/",
+        "to": "fonts/",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "public/favicon.ico",
+        "to": "public/favicon.ico"
+      },
+      {
+        "from": "public/favicon.icns",
+        "to": "public/favicon.icns"
+      },
+      {
+        "from": "public/favicon.png",
+        "to": "public/favicon.png"
+      },
+      {
+        "from": "public/favicon.svg",
+        "to": "public/favicon.svg"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "public/favicon.ico"
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/favicon.icns"
+      "icon": "public/favicon.icns",
+      "category": "public.app-category.productivity"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "public/favicon.png"
+      "icon": "public/favicon.png",
+      "category": "Utility"
     }
   }
 }
