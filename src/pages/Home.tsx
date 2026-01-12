@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Home as HomeIcon, Coffee, Bell, Cherry, Gamepad2, Sparkles } from "lucide-react";
+import { Link } from "wouter";
 import { TaskCard } from "../components/TaskCard";
 import { TaskFormDialog } from "../components/TaskFormDialog";
 import { useTasks } from "../lib/task-context";
@@ -116,11 +117,28 @@ export default function Home() {
         <div className="flex flex-1 overflow-hidden">
           {/* Left Ribbon Nav */}
           <div className="w-16 md:w-20 bg-[#FFF4B4] border-r-4 border-[#8B6F47] flex flex-col items-center py-6 gap-6 z-10">
-            <NavButton icon={<HomeIcon size={24} />} active tooltip="Home" />
-            <NavButton icon={<Coffee size={24} />} tooltip="Break Time" />
-            <NavButton icon={<Cherry size={24} />} tooltip="Recipes" />
+            <NavButton 
+              icon={<HomeIcon size={24} />} 
+              active 
+              tooltip="Home"
+              href="/"
+            />
+            <NavButton 
+              icon={<Coffee size={24} />} 
+              tooltip="Break Time" 
+              href="/break"
+            />
+            <NavButton 
+              icon={<Cherry size={24} />} 
+              tooltip="Recipes" 
+              href="/recipes"
+            />
             <div className="mt-auto">
-              <NavButton icon={<Bell size={24} />} tooltip="Notifications" />
+              <NavButton 
+                icon={<Bell size={24} />} 
+                tooltip="Notifications" 
+                href="/"
+              />
             </div>
           </div>
 
@@ -215,22 +233,31 @@ export default function Home() {
 }
 
 // Sub-components for cleaner file
-function NavButton({ icon, active, tooltip }: { icon: React.ReactNode, active?: boolean, tooltip: string }) {
+interface NavButtonProps {
+  icon: React.ReactNode;
+  active?: boolean;
+  tooltip: string;
+  href: string;
+}
+
+function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
   return (
-    <motion.button
-      whileHover={{ y: -2 }}
-      whileTap={{ y: 1 }}
-      className={`
-        w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-        ${active 
-          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
-        }
-      `}
-      title={tooltip}
-    >
-      <span className="text-[#8B6F47]">{icon}</span>
-    </motion.button>
+    <Link href={href}>
+      <motion.button
+        whileHover={{ y: -2 }}
+        whileTap={{ y: 1 }}
+        className={`
+          w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
+          ${active 
+            ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
+            : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+          }
+        `}
+        title={tooltip}
+      >
+        <span className="text-[#8B6F47]">{icon}</span>
+      </motion.button>
+    </Link>
   );
 }
 

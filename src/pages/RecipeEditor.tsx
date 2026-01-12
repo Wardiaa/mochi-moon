@@ -1,0 +1,194 @@
+import { motion } from "framer-motion";
+import { Utensils, ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { useState } from "react";
+
+export default function RecipeEditor() {
+  const [, setLocation] = useLocation();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [ingredients, setIngredients] = useState([""]);
+  const [instructions, setInstructions] = useState([""]);
+
+  const addIngredient = () => setIngredients([...ingredients, ""]);
+  const removeIngredient = (index: number) => {
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  };
+  const updateIngredient = (index: number, val: string) => {
+    const next = [...ingredients];
+    next[index] = val;
+    setIngredients(next);
+  };
+
+  const addInstruction = () => setInstructions([...instructions, ""]);
+  const removeInstruction = (index: number) => {
+    setInstructions(instructions.filter((_, i) => i !== index));
+  };
+  const updateInstruction = (index: number, val: string) => {
+    const next = [...instructions];
+    next[index] = val;
+    setInstructions(next);
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Save recipe to localStorage
+    const recipe = {
+      name,
+      description,
+      ingredients: ingredients.filter(ing => ing.trim() !== ""),
+      instructions: instructions.filter(inst => inst.trim() !== ""),
+      difficulty: "Medium", // Default value
+      time: "30 mins" // Default value
+    };
+    
+    // Get existing recipes from localStorage
+    const existingRecipes = JSON.parse(localStorage.getItem('mochi-recipes') || '[]');
+    
+    // Add new recipe
+    existingRecipes.push(recipe);
+    
+    // Save back to localStorage
+    localStorage.setItem('mochi-recipes', JSON.stringify(existingRecipes));
+    
+    // Show success message
+    alert("Recipe saved to your Secret Book! 🍰");
+    
+    // Navigate back to recipes page
+    setLocation("/recipes");
+  };
+
+  return (
+    <div className="min-h-screen bg-[#4A4A4A] p-4 md:p-8 flex items-center justify-center font-pixel">
+      <motion.div 
+        className="w-full max-w-5xl h-[85vh] bg-[#FFF8F0] relative flex flex-col shadow-[10px_10px_0_0_#222] border-4 border-[#8B6F47] overflow-hidden rounded-sm"
+      >
+        <div className="h-12 bg-[#B4FFE6] border-b-4 border-[#8B6F47] flex items-center justify-between px-4">
+          <div className="flex items-center gap-2">
+            <Utensils className="text-[#8B6F47]" />
+            <span className="font-display text-[#8B6F47] text-sm md:text-base pt-1">
+              Secret Recipe Editor
+            </span>
+          </div>
+          <Link href="/recipes">
+            <button className="w-6 h-6 bg-[#FFC4DD] border-2 border-[#8B6F47] hover:bg-red-400 flex items-center justify-center">
+              <span className="text-[#8B6F47] text-xs">x</span>
+            </button>
+          </Link>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-8 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
+          <Link href="/recipes">
+            <button className="flex items-center gap-2 text-[#8B6F47] mb-8 hover:translate-x-[-4px] transition-transform uppercase text-xs font-bold">
+              <ArrowLeft size={16} /> Back to Book
+            </button>
+          </Link>
+
+          <form onSubmit={handleSave} className="max-w-2xl mx-auto space-y-8">
+            <div className="space-y-4">
+              <label className="block text-[#8B6F47] font-display text-xl uppercase">Recipe Name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Dreamy Matcha Roll"
+                className="w-full h-14 px-4 bg-white border-4 border-[#8B6F47] text-[#8B6F47] focus:outline-none focus:bg-[#FFF4B4] transition-colors"
+                required
+              />
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-[#8B6F47] font-display text-xl uppercase">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="A little story about this treat..."
+                className="w-full h-32 p-4 bg-white border-4 border-[#8B6F47] text-[#8B6F47] focus:outline-none focus:bg-[#FFF4B4] transition-colors resize-none font-pixel"
+                required
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className="text-[#8B6F47] font-display text-xl uppercase">Ingredients</label>
+                <button
+                  type="button"
+                  onClick={addIngredient}
+                  className="w-10 h-10 bg-[#B4FFE6] border-2 border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47] flex items-center justify-center text-[#8B6F47] active:translate-y-0.5 active:shadow-none"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+              
+              <div className="space-y-3">
+                {ingredients.map((ing, i) => (
+                  <div key={i} className="flex gap-3">
+                    <input
+                      value={ing}
+                      onChange={(e) => updateIngredient(i, e.target.value)}
+                      placeholder={`Ingredient #${i + 1}`}
+                      className="flex-1 h-12 px-4 bg-white border-2 border-[#8B6F47] text-[#8B6F47] focus:outline-none focus:bg-[#FFF4B4]"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeIngredient(i)}
+                      className="w-12 h-12 bg-[#FFC4DD] border-2 border-[#8B6F47] flex items-center justify-center text-[#8B6F47]"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className="text-[#8B6F47] font-display text-xl uppercase">Instructions</label>
+                <button
+                  type="button"
+                  onClick={addInstruction}
+                  className="w-10 h-10 bg-[#D7C4FF] border-2 border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47] flex items-center justify-center text-[#8B6F47] active:translate-y-0.5 active:shadow-none"
+                >
+                  <Plus size={20} />
+                </button>
+              </div>
+              
+              <div className="space-y-3">
+                {instructions.map((step, i) => (
+                  <div key={i} className="flex gap-3">
+                    <textarea
+                      value={step}
+                      onChange={(e) => updateInstruction(i, e.target.value)}
+                      placeholder={`Step ${i + 1}...`}
+                      className="flex-1 min-h-[80px] p-3 bg-white border-2 border-[#8B6F47] text-[#8B6F47] focus:outline-none focus:bg-[#FFF4B4] resize-none font-pixel"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeInstruction(i)}
+                      className="w-12 h-12 bg-[#FFC4DD] border-2 border-[#8B6F47] flex items-center justify-center text-[#8B6F47]"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-8">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full py-4 bg-[#D7C4FF] border-4 border-[#8B6F47] shadow-[6px_6px_0_0_#8B6F47] text-[#8B6F47] font-display text-xl flex items-center justify-center gap-3 uppercase"
+              >
+                <Save /> Save Secret Recipe
+              </motion.button>
+            </div>
+          </form>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
