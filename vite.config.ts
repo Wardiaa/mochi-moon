@@ -1,20 +1,31 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: './', // Important pour Electron
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-    },
+      '@components': path.resolve(__dirname, './src/components'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@lib': path.resolve(__dirname, './src/lib'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+    }
   },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    assetsDir: 'assets',
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      }
+    }
   },
-  base: './',
-  // This ensures fonts are copied to dist
-  publicDir: 'public',
-});
+  server: {
+    port: 5173,
+    strictPort: true
+  }
+})

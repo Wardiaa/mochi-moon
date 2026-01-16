@@ -2,11 +2,10 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Save, Plus, Trash2, Gamepad2 } from "lucide-react";
 import { Home as HomeIcon, Coffee, Cherry } from "lucide-react";
 
-import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { navigateTo } from "../utils/navigation";
 
 export default function RecipeEditor() {
-  const [, setLocation] = useLocation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState([""]);
@@ -58,10 +57,8 @@ export default function RecipeEditor() {
     // Save back to localStorage
     localStorage.setItem('mochi-recipes', JSON.stringify(existingRecipes));
     
-    
-    
     // Navigate back to recipes page
-    setLocation("/recipes");
+    navigateTo("/recipes");
   };
 
   return (
@@ -115,7 +112,6 @@ export default function RecipeEditor() {
           <div className="w-16 md:w-20 bg-[#FFF4B4] border-r-4 border-[#8B6F47] flex flex-col items-center py-6 gap-6 z-10">
             <NavButton 
               icon={<HomeIcon size={24} />} 
-              
               tooltip="Home"
               href="/"
             />
@@ -134,11 +130,12 @@ export default function RecipeEditor() {
 
           {/* Main Content Area */}
           <div className="flex-1 overflow-y-auto p-8 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
-            <Link href="/recipes">
-              <button className="flex items-center gap-2 text-[#8B6F47] mb-8 hover:translate-x-[-4px] transition-transform uppercase text-xs font-bold">
-                <ArrowLeft size={16} /> Back to Book
-              </button>
-            </Link>
+            <button 
+              onClick={() => navigateTo("/recipes")}
+              className="flex items-center gap-2 text-[#8B6F47] mb-8 hover:translate-x-[-4px] transition-transform uppercase text-xs font-bold"
+            >
+              <ArrowLeft size={16} /> Back to Book
+            </button>
 
             <form onSubmit={handleSave} className="max-w-2xl mx-auto space-y-8">
               <div className="space-y-4">
@@ -260,21 +257,20 @@ interface NavButtonProps {
 
 function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
   return (
-    <Link href={href}>
-      <motion.button
-        whileHover={{ y: -2 }}
-        whileTap={{ y: 1 }}
-        className={`
-          w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-          ${active 
-            ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-            : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
-          }
-        `}
-        title={tooltip}
-      >
-        <span className="text-[#8B6F47]">{icon}</span>
-      </motion.button>
-    </Link>
+    <motion.button
+      onClick={() => navigateTo(href)}
+      whileHover={{ y: -2 }}
+      whileTap={{ y: 1 }}
+      className={`
+        w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
+        ${active 
+          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
+          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+        }
+      `}
+      title={tooltip}
+    >
+      <span className="text-[#8B6F47]">{icon}</span>
+    </motion.button>
   );
 }

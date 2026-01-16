@@ -1,0 +1,8 @@
+Mochi Moon Café Task Manager
+Version 1.0.0
+
+Copyright © 2024 Mochi Moon Team
+All rights reserved.
+
+This software is provided for personal use only.
+You may not redistribute or modify this software without permission.

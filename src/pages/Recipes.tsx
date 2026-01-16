@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Cherry, Sparkles, Plus, X, Heart, Clock, Gamepad2 } from "lucide-react";
 import { Home as HomeIcon, Coffee } from "lucide-react";
 
-import { Link } from "wouter";
+import { navigateTo } from "../utils/navigation";
 import { useState, useEffect } from "react";
 
 const DEFAULT_RECIPES = [
@@ -93,7 +93,6 @@ export default function Recipes() {
           <div className="w-16 md:w-20 bg-[#FFF4B4] border-r-4 border-[#8B6F47] flex flex-col items-center py-6 gap-6 z-10">
             <NavButton 
               icon={<HomeIcon size={24} />} 
-              
               tooltip="Home"
               href="/"
             />
@@ -117,15 +116,14 @@ export default function Recipes() {
               <h1 className="text-3xl font-display text-[#8B6F47] flex items-center gap-3">
                 Secret Recipes <Cherry className="text-[#FFC4DD]" />
               </h1>
-              <Link href="/recipes/new">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 bg-[#B4FFE6] border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-pixel text-xs flex items-center gap-2"
-                >
-                  <Plus size={16} /> New Recipe
-                </motion.button>
-              </Link>
+              <motion.button
+                onClick={() => navigateTo("/recipes/new")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 bg-[#B4FFE6] border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-pixel text-xs flex items-center gap-2"
+              >
+                <Plus size={16} /> New Recipe
+              </motion.button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -250,21 +248,20 @@ interface NavButtonProps {
 
 function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
   return (
-    <Link href={href}>
-      <motion.button
-        whileHover={{ y: -2 }}
-        whileTap={{ y: 1 }}
-        className={`
-          w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-          ${active 
-            ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-            : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
-          }
-        `}
-        title={tooltip}
-      >
-        <span className="text-[#8B6F47]">{icon}</span>
-      </motion.button>
-    </Link>
+    <motion.button
+      onClick={() => navigateTo(href)}
+      whileHover={{ y: -2 }}
+      whileTap={{ y: 1 }}
+      className={`
+        w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
+        ${active 
+          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
+          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+        }
+      `}
+      title={tooltip}
+    >
+      <span className="text-[#8B6F47]">{icon}</span>
+    </motion.button>
   );
 }

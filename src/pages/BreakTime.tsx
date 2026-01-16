@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Home as HomeIcon, Coffee, Cherry, Gamepad2 } from "lucide-react";
 
-import { Link } from "wouter";
+import { navigateTo } from "../utils/navigation";
 
 export default function BreakTime() {
   return (
@@ -55,7 +55,6 @@ export default function BreakTime() {
           <div className="w-16 md:w-20 bg-[#FFF4B4] border-r-4 border-[#8B6F47] flex flex-col items-center py-6 gap-6 z-10">
             <NavButton 
               icon={<HomeIcon size={24} />} 
-              
               tooltip="Home"
               href="/"
             />
@@ -70,7 +69,6 @@ export default function BreakTime() {
               tooltip="Recipes" 
               href="/recipes"
             />
-            
           </div>
 
           {/* Main Content Area */}
@@ -90,24 +88,22 @@ export default function BreakTime() {
               You've been working hard! Take a moment to stretch, grab a warm drink, and watch the clouds drift by.
             </p>
             <div className="flex gap-4">
-              <Link href="/break/timer">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-[#D7C4FF] border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-bold uppercase"
-                >
-                  Start a Timer
-                </motion.button>
-              </Link>
-              <Link href="/">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-white border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-bold uppercase"
-                >
-                  Back to Work
-                </motion.button>
-              </Link>
+              <motion.button
+                onClick={() => navigateTo("/break/timer")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-[#D7C4FF] border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-bold uppercase"
+              >
+                Start a Timer
+              </motion.button>
+              <motion.button
+                onClick={() => navigateTo("/")}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-white border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-bold uppercase"
+              >
+                Back to Work
+              </motion.button>
             </div>
           </div>
         </div>
@@ -125,21 +121,20 @@ interface NavButtonProps {
 
 function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
   return (
-    <Link href={href}>
-      <motion.button
-        whileHover={{ y: -2 }}
-        whileTap={{ y: 1 }}
-        className={`
-          w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-          ${active 
-            ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-            : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
-          }
-        `}
-        title={tooltip}
-      >
-        <span className="text-[#8B6F47]">{icon}</span>
-      </motion.button>
-    </Link>
+    <motion.button
+      onClick={() => navigateTo(href)}
+      whileHover={{ y: -2 }}
+      whileTap={{ y: 1 }}
+      className={`
+        w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
+        ${active 
+          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
+          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+        }
+      `}
+      title={tooltip}
+    >
+      <span className="text-[#8B6F47]">{icon}</span>
+    </motion.button>
   );
 }

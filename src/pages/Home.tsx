@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Home as HomeIcon, Coffee, Cherry, Gamepad2, Sparkles } from "lucide-react";
-import { Link } from "wouter";
+import { navigateTo } from "../utils/navigation";
 import { TaskCard } from "../components/TaskCard";
 import { TaskFormDialog } from "../components/TaskFormDialog";
 import { useTasks } from "../lib/task-context";
@@ -236,22 +236,19 @@ interface NavButtonProps {
 
 function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
   return (
-    <Link href={href}>
-      <motion.button
-        whileHover={{ y: -2 }}
-        whileTap={{ y: 1 }}
-        className={`
-          w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-          ${active 
-            ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-            : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
-          }
-        `}
-        title={tooltip}
-      >
-        <span className="text-[#8B6F47]">{icon}</span>
-      </motion.button>
-    </Link>
+    <button
+      onClick={() => navigateTo(href)}
+      className={`
+        w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
+        ${active 
+          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
+          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+        }
+      `}
+      title={tooltip}
+    >
+      <span className="text-[#8B6F47]">{icon}</span>
+    </button>
   );
 }
 

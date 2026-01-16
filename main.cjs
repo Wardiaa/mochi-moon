@@ -31,7 +31,7 @@ function createWindow() {
     titleBarStyle: 'hidden',
     transparent: false,
     backgroundColor: '#FFF8F0',
-    icon: getIconPath(), // Set icon for current platform
+    icon: getIconPath(),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -50,6 +50,12 @@ function createWindow() {
     // Production: Load from dist folder
     const indexPath = path.join(__dirname, 'dist', 'index.html');
     
+    // Vérifiez si le fichier existe
+    if (!fs.existsSync(indexPath)) {
+      console.error('Fichier index.html non trouvé:', indexPath);
+      return;
+    }
+    
     mainWindow.loadFile(indexPath).catch(err => {
       console.error('Failed to load index.html:', err);
       
@@ -63,6 +69,11 @@ function createWindow() {
 
   // Optional: Set window title
   mainWindow.setTitle('Mochi Moon Café Task Manager');
+  
+  // Handle external links
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    return { action: 'deny' }; // Empêche l'ouverture de nouvelles fenêtres
+  });
 }
 
 app.whenReady().then(() => {
@@ -88,7 +99,27 @@ const dataPath = path.join(app.getPath('userData'), 'mochi-tasks.json');
 ipcMain.handle('read-tasks', async () => {
   try {
     if (!fs.existsSync(dataPath)) {
-      return [];
+      // Créer un fichier avec des tâches par défaut
+      const defaultTasks = [
+        {
+          id: 1,
+          title: "Welcome to Mochi Moon!",
+          priority: "medium",
+          completed: false,
+          xp: 10,
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 2,
+          title: "Create your first task",
+          priority: "low",
+          completed: false,
+          xp: 5,
+          createdAt: new Date().toISOString()
+        }
+      ];
+      fs.writeFileSync(dataPath, JSON.stringify(defaultTasks, null, 2));
+      return defaultTasks;
     }
     const data = fs.readFileSync(dataPath, 'utf8');
     return JSON.parse(data);
