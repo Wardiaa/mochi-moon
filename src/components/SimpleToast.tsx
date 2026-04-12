@@ -22,7 +22,6 @@ export function SimpleToastProvider({ children }: { children: React.ReactNode })
     const id = Date.now();
     setToasts((prev) => [...prev, { id, title, description, variant }]);
     
-    // Auto dismiss after 3 seconds
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3000);
@@ -35,23 +34,24 @@ export function SimpleToastProvider({ children }: { children: React.ReactNode })
   return (
     <ToastContext.Provider value={{ toasts, toast, dismiss }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-4 right-4 z-[100000] flex flex-col gap-2 pointer-events-none">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`px-4 py-3 rounded-lg border shadow-lg max-w-sm ${
+            className={`pointer-events-auto px-4 py-3 border-2 shadow-[4px_4px_0_0_#8B6F47] max-w-sm relative animate-in slide-in-from-right ${
               t.variant === 'destructive'
-                ? 'bg-red-50 border-red-200 text-red-800'
-                : 'bg-white border-gray-200 text-gray-800'
+                ? 'bg-[#FFC4DD] border-[#8B6F47] text-[#5C4033]'
+                : 'bg-[#B4FFE6] border-[#8B6F47] text-[#5C4033]'
             }`}
+            style={{ fontFamily: 'Silkscreen, monospace' }}
           >
-            <div className="font-semibold">{t.title}</div>
-            <div className="text-sm mt-1">{t.description}</div>
+            <div className="font-bold text-sm">{t.title}</div>
+            <div className="text-xs mt-1 opacity-80">{t.description}</div>
             <button
               onClick={() => dismiss(t.id)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-1 right-2 text-[#8B6F47] hover:text-[#5C4033] text-lg leading-none"
             >
-              ×
+              x
             </button>
           </div>
         ))}

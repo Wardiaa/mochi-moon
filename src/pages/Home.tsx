@@ -42,7 +42,6 @@ export default function Home() {
     setIsDialogOpen(true);
   };
 
-  // Calculate XP
   const currentXP = tasks?.reduce((acc, task) => acc + (task.completed ? (task.xp || 10) : 0), 0) || 0;
   const nextLevelXP = Math.ceil((currentXP + 1) / 100) * 100;
   const progressPercent = (currentXP / nextLevelXP) * 100;
@@ -71,51 +70,42 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#FFF8F0] p-0 m-0 w-screen h-screen font-pixel">
       
-      {/* Window Resize Handles */}
       <div className="window-resize-handle resize-right"></div>
       <div className="window-resize-handle resize-bottom"></div>
       <div className="window-resize-handle resize-corner"></div>
       
-      {/* Main Window Container - Now it's the entire window */}
       <div className="w-full h-full bg-[#FFF8F0] flex flex-col overflow-hidden">
         
-        {/* Title Bar with Window Controls */}
         <div className="h-12 bg-[#B4FFE6] border-b-4 border-[#8B6F47] flex items-center justify-between px-4 select-none draggable">
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-[#8B6F47]" />
             <span className="font-display text-[#8B6F47] text-sm md:text-base tracking-tight pt-1">
-              Mochi Moon Café Task Manager v1.0
+              Mochi Moon Cafe Task Manager v1.0
             </span>
           </div>
           <div className="flex gap-2 non-draggable">
-            {/* Minimize button */}
             <button 
               className="w-6 h-6 bg-[#B4FFE6] border-2 border-[#8B6F47] hover:bg-[#FFF4B4] flex items-center justify-center transition-colors"
               onClick={() => window.electronAPI?.minimizeApp()}
             >
               <span className="text-[#8B6F47] text-xs mb-2">_</span>
             </button>
-            
-            {/* Maximize/Restore button */}
             <button 
               className="w-6 h-6 bg-[#D7C4FF] border-2 border-[#8B6F47] hover:bg-white flex items-center justify-center transition-colors"
               onClick={() => window.electronAPI?.maximizeApp()}
             >
-              <span className="text-[#8B6F47] text-xs">□</span>
+              <span className="text-[#8B6F47] text-xs">&#9633;</span>
             </button>
-            
-            {/* Close button */}
             <button 
               className="w-6 h-6 bg-[#FFC4DD] border-2 border-[#8B6F47] hover:bg-red-400 flex items-center justify-center transition-colors"
               onClick={() => window.electronAPI?.closeApp()}
             >
-              <span className="text-[#8B6F47] text-xs">×</span>
+              <span className="text-[#8B6F47] text-xs">x</span>
             </button>
           </div>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Left Ribbon Nav */}
           <div className="w-16 md:w-20 bg-[#FFF4B4] border-r-4 border-[#8B6F47] flex flex-col items-center py-6 gap-6 z-10">
             <NavButton 
               icon={<HomeIcon size={24} />} 
@@ -133,13 +123,9 @@ export default function Home() {
               tooltip="Recipes" 
               href="/recipes"
             />
-          
           </div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col relative bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
-            
-            {/* Header / Stats */}
+          <div className="flex-1 flex flex-col relative bg-[#FFF8F0] graphy-bg">
             <div className="p-6 md:p-8 pb-2 flex justify-between items-end border-b-2 border-[#8B6F47]/10 bg-white/50 backdrop-blur-sm z-10">
               <div>
                 <h1 className="text-2xl md:text-3xl font-display text-[#8B6F47] mb-2 drop-shadow-sm flex items-center gap-3">
@@ -157,7 +143,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Scrollable Canvas */}
             <div className="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
                 {filteredTasks?.map((task) => (
@@ -170,7 +155,6 @@ export default function Home() {
                   />
                 ))}
 
-                {/* Add New Card (Empty State) */}
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -185,7 +169,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Floating Action Button for Mobile */}
             <motion.button
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
@@ -195,7 +178,6 @@ export default function Home() {
               <Plus size={28} />
             </motion.button>
 
-            {/* Status Bar */}
             <div className="h-10 bg-[#B4FFE6] border-t-4 border-[#8B6F47] flex items-center px-4 font-pixel text-xs text-[#8B6F47] justify-between z-20">
               <div className="flex items-center gap-2 w-1/2">
                 <span>XP to Lvl {Math.ceil(currentXP/100) + 1}:</span>
@@ -209,7 +191,7 @@ export default function Home() {
                 <span>{currentXP} XP</span>
               </div>
               <div className="hidden md:block opacity-60">
-                Mochi OS • Local Mode
+                Mochi OS - Local Mode
               </div>
             </div>
 
@@ -226,7 +208,6 @@ export default function Home() {
   );
 }
 
-// Sub-components for cleaner file
 interface NavButtonProps {
   icon: React.ReactNode;
   active?: boolean;

@@ -180,3 +180,73 @@
 .animate-wiggle:hover {
   animation: wiggle 0.3s ease-in-out infinite;
 }
+/* Mochi Pet Styles */
+.mochi-container {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.mochi-container * {
+  pointer-events: auto;
+}
+
+/* Mochi drag handle */
+.mochi-drag-handle {
+  cursor: grab;
+  user-select: none;
+}
+
+.mochi-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Mochi animations */
+@keyframes mochiBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes mochiWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes mochiSleep {
+  0%, 100% { transform: scale(0.95); }
+  50% { transform: scale(1); }
+}
+
+.mochi-bounce {
+  animation: mochiBounce 2s ease-in-out infinite;
+}
+
+.mochi-wiggle {
+  animation: mochiWiggle 0.5s ease-in-out;
+}
+
+.mochi-sleep {
+  animation: mochiSleep 3s ease-in-out infinite;
+}
+
+/* Thought bubble tail */
+.thought-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+/* Group hover for stats tooltip */
+.group:hover .group-hover\:block {
+  display: block;
+}
+.graphy-bg {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAACgAgMAAADm7QMnAAAADFBMVEWIiIixsbGxsbGxsbF0SLUbAAAABHRSTlP/bytS3QghxwAAAEVJREFUeAFjYA3FAA4Mq17tWrcalVhBtOBK7IL/McFf4rUPZYtGLRq1aNSiUYtGLSJcoYzWR4PBolGLRi0atWjUotH6CAA67a9q5+gpSAAAAABJRU5ErkJggg==");
+}

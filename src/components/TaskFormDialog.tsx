@@ -1,22 +1,12 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { useTasks } from "../lib/task-context";
+import { useSimpleToast } from "./SimpleToast";
 import type { Task } from "../lib/types";
-
-// SIMPLE TOAST FUNCTION - Remove the broken useToast import
-const useSimpleToast = () => {
-  return {
-    toast: ({ title, description, variant = 'default' }: any) => {
-      console.log("Toast:", title, description, variant);
-      // Optional: You could use alert for now
-      // alert(`${title}: ${description}`);
-    }
-  };
-};
 
 interface TaskFormDialogProps {
   open: boolean;
@@ -29,7 +19,7 @@ export function TaskFormDialog({ open, onOpenChange, taskToEdit }: TaskFormDialo
   const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { toast } = useSimpleToast(); // Use simple toast instead
+  const { toast } = useSimpleToast();
   const { addTask, updateTask } = useTasks();
 
   useEffect(() => {
@@ -57,10 +47,10 @@ export function TaskFormDialog({ open, onOpenChange, taskToEdit }: TaskFormDialo
 
       if (taskToEdit) {
         await updateTask(taskToEdit.id, taskData);
-        toast({ title: "Task Updated!", description: "Keep up the good work! 🌟" });
+        toast({ title: "Task Updated!", description: "Keep up the good work!" });
       } else {
         await addTask(taskData);
-        toast({ title: "New Task Added!", description: "Let's do this! 💪" });
+        toast({ title: "New Task Added!", description: "Let's do this!" });
       }
       onOpenChange(false);
     } catch (error) {
@@ -76,11 +66,17 @@ export function TaskFormDialog({ open, onOpenChange, taskToEdit }: TaskFormDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#FFF8F0] border-4 border-[#8B6F47] rounded-none shadow-[8px_8px_0_0_rgba(139,111,71,0.2)] font-pixel sm:max-w-[425px]">
+      <DialogContent 
+        className="bg-[#FFF8F0] border-4 border-[#8B6F47] rounded-none shadow-[8px_8px_0_0_rgba(139,111,71,0.2)] font-pixel sm:max-w-[425px]"
+        aria-describedby="task-form-description"
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-display text-[#8B6F47] text-center pt-4">
             {taskToEdit ? "Edit Quest" : "New Quest"}
           </DialogTitle>
+          <DialogDescription id="task-form-description" className="text-center text-[#8B6F47]/60 text-xs">
+            {taskToEdit ? "Update your quest details below." : "Create a new quest to track."}
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
