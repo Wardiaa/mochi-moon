@@ -63,15 +63,16 @@ function createWindow() {
     return { action: 'deny' };
   });
 
-  // Set Content-Security-Policy to fix the CSP warning
+  // Set Content-Security-Policy
+  // worker-src blob: is required for canvas-confetti (it spawns a blob: Worker)
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           isDev
-            ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ws://localhost:*"
-            : "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'"
+            ? "default-src 'self'; script-src 'self' 'unsafe-inline'; worker-src blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' ws://localhost:*"
+            : "default-src 'self'; script-src 'self'; worker-src blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'"
         ]
       }
     });
@@ -105,7 +106,7 @@ ipcMain.handle('read-tasks', async () => {
           title: "Welcome to Mochi Moon!",
           priority: "medium",
           completed: false,
-          xp: 10,
+          xp: 25,
           createdAt: new Date().toISOString()
         },
         {
@@ -113,7 +114,7 @@ ipcMain.handle('read-tasks', async () => {
           title: "Create your first task",
           priority: "low",
           completed: false,
-          xp: 5,
+          xp: 10,
           createdAt: new Date().toISOString()
         }
       ];

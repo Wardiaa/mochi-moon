@@ -1,54 +1,83 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Cherry, Sparkles, Plus, X, Heart, Clock, Gamepad2 } from "lucide-react";
+import { Cherry, Sparkles, Plus, X, Heart, Clock, Gamepad2, Trash2, Edit2 } from "lucide-react";
 import { Home as HomeIcon, Coffee } from "lucide-react";
 
 import { navigateTo } from "../utils/navigation";
 import { useState, useEffect } from "react";
 
 const DEFAULT_RECIPES = [
-  { 
-    name: "Strawberry Mochi", 
+  {
+    name: "Strawberry Mochi",
     ingredients: ["Sweet Rice Flour", "Sugar", "Fresh Strawberries"],
     description: "Soft and chewy rice cake filled with sweet red bean paste and a whole fresh strawberry.",
     difficulty: "Medium",
-    time: "45 mins"
+    time: "45 mins",
   },
-  { 
-    name: "Moon Dew Tea", 
+  {
+    name: "Moon Dew Tea",
     ingredients: ["Jasmine Buds", "Moonlight Glow", "Clear Spring Water"],
     description: "A calming tea that glows softly in the dark. Harvested only during the full moon.",
     difficulty: "Easy",
-    time: "10 mins"
+    time: "10 mins",
   },
-  { 
-    name: "Star Cookie", 
+  {
+    name: "Star Cookie",
     ingredients: ["Butter", "Flour", "Stardust Sugar", "Vanilla"],
     description: "Crunchy star-shaped cookies that sparkle when you take a bite.",
     difficulty: "Medium",
-    time: "30 mins"
+    time: "30 mins",
   },
 ];
 
 export default function Recipes() {
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
-  const [recipes, setRecipes] = useState(DEFAULT_RECIPES);
+  const [selectedRecipeIndex, setSelectedRecipeIndex] = useState<number | null>(null);
+  const [savedRecipes, setSavedRecipes] = useState<any[]>([]);
+
+  const loadSaved = () => {
+    const data = JSON.parse(localStorage.getItem("mochi-recipes") || "[]");
+    setSavedRecipes(data);
+  };
 
   useEffect(() => {
-    const savedRecipes = JSON.parse(localStorage.getItem('mochi-recipes') || '[]');
-    if (savedRecipes.length > 0) {
-      setRecipes([...DEFAULT_RECIPES, ...savedRecipes]);
-    }
+    loadSaved();
   }, []);
+
+  const allRecipes = [...DEFAULT_RECIPES, ...savedRecipes];
+
+  const openRecipe = (recipe: any, index: number) => {
+    setSelectedRecipe(recipe);
+    setSelectedRecipeIndex(index);
+  };
+
+  const handleDelete = (e: React.MouseEvent, savedIndex: number) => {
+    e.stopPropagation();
+    if (!confirm("Delete this recipe?")) return;
+    const updated = savedRecipes.filter((_, i) => i !== savedIndex);
+    localStorage.setItem("mochi-recipes", JSON.stringify(updated));
+    setSavedRecipes(updated);
+    if (selectedRecipe && selectedRecipeIndex === DEFAULT_RECIPES.length + savedIndex) {
+      setSelectedRecipe(null);
+      setSelectedRecipeIndex(null);
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent, recipe: any, savedIndex: number) => {
+    e.stopPropagation();
+    localStorage.setItem(
+      "mochi-editing-recipe",
+      JSON.stringify({ recipe, savedIndex })
+    );
+    navigateTo("/recipes/new");
+  };
 
   return (
     <div className="min-h-screen bg-[#FFF8F0] p-0 m-0 w-screen h-screen font-pixel">
-      
       <div className="window-resize-handle resize-right"></div>
       <div className="window-resize-handle resize-bottom"></div>
       <div className="window-resize-handle resize-corner"></div>
-      
+
       <div className="w-full h-full bg-[#FFF8F0] flex flex-col overflow-hidden">
-        
         <div className="h-12 bg-[#B4FFE6] border-b-4 border-[#8B6F47] flex items-center justify-between px-4 select-none draggable">
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-[#8B6F47]" />
@@ -57,19 +86,19 @@ export default function Recipes() {
             </span>
           </div>
           <div className="flex gap-2 non-draggable">
-            <button 
+            <button
               className="w-6 h-6 bg-[#B4FFE6] border-2 border-[#8B6F47] hover:bg-[#FFF4B4] flex items-center justify-center transition-colors"
               onClick={() => (window as any).electronAPI?.minimizeApp?.()}
             >
               <span className="text-[#8B6F47] text-xs mb-2">_</span>
             </button>
-            <button 
+            <button
               className="w-6 h-6 bg-[#D7C4FF] border-2 border-[#8B6F47] hover:bg-white flex items-center justify-center transition-colors"
               onClick={() => (window as any).electronAPI?.maximizeApp?.()}
             >
               <span className="text-[#8B6F47] text-xs">&#9633;</span>
             </button>
-            <button 
+            <button
               className="w-6 h-6 bg-[#FFC4DD] border-2 border-[#8B6F47] hover:bg-red-400 flex items-center justify-center transition-colors"
               onClick={() => (window as any).electronAPI?.closeApp?.()}
             >
@@ -91,7 +120,10 @@ export default function Recipes() {
                 Secret Recipes <Cherry className="text-[#FFC4DD]" />
               </h1>
               <motion.button
-                onClick={() => navigateTo("/recipes/new")}
+                onClick={() => {
+                  localStorage.removeItem("mochi-editing-recipe");
+                  navigateTo("/recipes/new");
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-2 bg-[#B4FFE6] border-2 border-[#8B6F47] shadow-[4px_4px_0_0_#8B6F47] text-[#8B6F47] font-pixel text-xs flex items-center gap-2"
@@ -99,43 +131,68 @@ export default function Recipes() {
                 <Plus size={16} /> New Recipe
               </motion.button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {recipes.map((recipe, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  onClick={() => setSelectedRecipe(recipe)}
-                  className="bg-white border-4 border-[#8B6F47] p-6 shadow-[6px_6px_0_0_rgba(139,111,71,0.1)] relative overflow-hidden group hover:shadow-[8px_8px_0_0_rgba(139,111,71,0.2)] transition-all cursor-pointer hover:translate-y-[-4px]"
-                >
-                  <div className="absolute -top-4 -right-4 text-4xl opacity-10 group-hover:opacity-30 transition-opacity">
-                    🍪
-                  </div>
-                  <h2 className="text-xl font-display text-[#8B6F47] mb-3">{recipe.name}</h2>
-                  <div className="flex gap-4 mb-3">
-                    <span className="text-[10px] bg-[#B4FFE6] px-2 py-0.5 border border-[#8B6F47] text-[#8B6F47] uppercase font-bold">
-                      {recipe.difficulty}
-                    </span>
-                    <span className="text-[10px] bg-[#FFF4B4] px-2 py-0.5 border border-[#8B6F47] text-[#8B6F47] uppercase font-bold flex items-center gap-1">
-                      <Clock size={10} /> {recipe.time}
-                    </span>
-                  </div>
-                  <ul className="space-y-1">
-                    {recipe.ingredients.slice(0, 2).map((ing: string, j: number) => (
-                      <li key={j} className="text-[#8B6F47]/70 text-sm flex items-center gap-2">
-                        <Sparkles size={12} className="text-[#FFF4B4]" /> {ing}
-                      </li>
-                    ))}
-                    {recipe.ingredients.length > 2 && (
-                      <li className="text-[#8B6F47]/40 text-xs italic ml-5">
-                        + {recipe.ingredients.length - 2} more...
-                      </li>
+              {allRecipes.map((recipe, i) => {
+                const isUserRecipe = i >= DEFAULT_RECIPES.length;
+                const savedIndex = i - DEFAULT_RECIPES.length;
+
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    onClick={() => openRecipe(recipe, i)}
+                    className="bg-white border-4 border-[#8B6F47] p-6 shadow-[6px_6px_0_0_rgba(139,111,71,0.1)] relative overflow-hidden group hover:shadow-[8px_8px_0_0_rgba(139,111,71,0.2)] transition-all cursor-pointer hover:translate-y-[-4px]"
+                  >
+                    <div className="absolute -top-4 -right-4 text-4xl opacity-10 group-hover:opacity-30 transition-opacity">
+                      🍪
+                    </div>
+
+                    {isUserRecipe && (
+                      <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <button
+                          onClick={(e) => handleEdit(e, recipe, savedIndex)}
+                          className="w-7 h-7 bg-[#D7C4FF] border border-[#8B6F47] flex items-center justify-center text-[#8B6F47] hover:bg-[#B4FFE6] transition-colors"
+                          title="Edit recipe"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        <button
+                          onClick={(e) => handleDelete(e, savedIndex)}
+                          className="w-7 h-7 bg-[#FFC4DD] border border-[#8B6F47] flex items-center justify-center text-[#8B6F47] hover:bg-red-300 transition-colors"
+                          title="Delete recipe"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                     )}
-                  </ul>
-                </motion.div>
-              ))}
+
+                    <h2 className="text-xl font-display text-[#8B6F47] mb-3 pr-16">{recipe.name}</h2>
+                    <div className="flex gap-4 mb-3">
+                      <span className="text-[10px] bg-[#B4FFE6] px-2 py-0.5 border border-[#8B6F47] text-[#8B6F47] uppercase font-bold">
+                        {recipe.difficulty}
+                      </span>
+                      <span className="text-[10px] bg-[#FFF4B4] px-2 py-0.5 border border-[#8B6F47] text-[#8B6F47] uppercase font-bold flex items-center gap-1">
+                        <Clock size={10} /> {recipe.time}
+                      </span>
+                    </div>
+                    <ul className="space-y-1">
+                      {recipe.ingredients.slice(0, 2).map((ing: string, j: number) => (
+                        <li key={j} className="text-[#8B6F47]/70 text-sm flex items-center gap-2">
+                          <Sparkles size={12} className="text-[#FFF4B4]" /> {ing}
+                        </li>
+                      ))}
+                      {recipe.ingredients.length > 2 && (
+                        <li className="text-[#8B6F47]/40 text-xs italic ml-5">
+                          + {recipe.ingredients.length - 2} more...
+                        </li>
+                      )}
+                    </ul>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -154,46 +211,70 @@ export default function Recipes() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-[#FFF8F0] border-4 border-[#8B6F47] w-full max-w-lg shadow-[12px_12px_0_0_#222] p-8 relative overflow-hidden"
+              className="bg-[#FFF8F0] border-4 border-[#8B6F47] w-full max-w-lg shadow-[12px_12px_0_0_#222] relative flex flex-col"
+              style={{ maxHeight: "85vh" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button 
-                onClick={() => setSelectedRecipe(null)}
-                className="absolute top-4 right-4 w-10 h-10 bg-[#FFC4DD] border-2 border-[#8B6F47] flex items-center justify-center text-[#8B6F47] hover:bg-white transition-colors"
-              >
-                <X size={24} />
-              </button>
+              {/* Fixed header */}
+              <div className="p-8 pb-0 flex-shrink-0">
+                <button
+                  onClick={() => setSelectedRecipe(null)}
+                  className="absolute top-4 right-4 w-10 h-10 bg-[#FFC4DD] border-2 border-[#8B6F47] flex items-center justify-center text-[#8B6F47] hover:bg-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
 
-              <h2 className="text-3xl font-display text-[#8B6F47] mb-4">{selectedRecipe.name}</h2>
-              
-              <div className="flex gap-4 mb-6">
-                <span className="text-xs bg-[#B4FFE6] px-3 py-1 border-2 border-[#8B6F47] text-[#8B6F47] font-bold uppercase">
-                  {selectedRecipe.difficulty}
-                </span>
-                <span className="text-xs bg-[#FFF4B4] px-3 py-1 border-2 border-[#8B6F47] text-[#8B6F47] font-bold uppercase flex items-center gap-2">
-                  <Clock size={14} /> {selectedRecipe.time}
-                </span>
-              </div>
+                <h2 className="text-3xl font-display text-[#8B6F47] mb-4 pr-12">{selectedRecipe.name}</h2>
 
-              <p className="text-[#8B6F47] mb-8 leading-relaxed italic border-l-4 border-[#D7C4FF] pl-4">
-                "{selectedRecipe.description}"
-              </p>
-
-              <div className="space-y-4">
-                <h3 className="font-display text-[#8B6F47] uppercase text-sm tracking-widest border-b-2 border-[#8B6F47]/10 pb-2">
-                  Ingredients List
-                </h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {selectedRecipe.ingredients.map((ing: string, i: number) => (
-                    <div key={i} className="flex items-center gap-3 bg-white p-3 border-2 border-[#8B6F47]/20">
-                      <Heart size={16} className="text-[#FFC4DD]" />
-                      <span className="text-[#8B6F47] font-bold">{ing}</span>
-                    </div>
-                  ))}
+                <div className="flex gap-4 mb-6">
+                  <span className="text-xs bg-[#B4FFE6] px-3 py-1 border-2 border-[#8B6F47] text-[#8B6F47] font-bold uppercase">
+                    {selectedRecipe.difficulty}
+                  </span>
+                  <span className="text-xs bg-[#FFF4B4] px-3 py-1 border-2 border-[#8B6F47] text-[#8B6F47] font-bold uppercase flex items-center gap-2">
+                    <Clock size={14} /> {selectedRecipe.time}
+                  </span>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t-4 border-dashed border-[#8B6F47]/20 flex justify-center">
+              {/* Scrollable body */}
+              <div className="overflow-y-auto flex-1 px-8 pb-0">
+                <p className="text-[#8B6F47] mb-8 leading-relaxed italic border-l-4 border-[#D7C4FF] pl-4">
+                  "{selectedRecipe.description}"
+                </p>
+
+                <div className="space-y-4">
+                  <h3 className="font-display text-[#8B6F47] uppercase text-sm tracking-widest border-b-2 border-[#8B6F47]/10 pb-2">
+                    Ingredients List
+                  </h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {selectedRecipe.ingredients.map((ing: string, i: number) => (
+                      <div key={i} className="flex items-center gap-3 bg-white p-3 border-2 border-[#8B6F47]/20">
+                        <Heart size={16} className="text-[#FFC4DD] flex-shrink-0" />
+                        <span className="text-[#8B6F47] font-bold">{ing}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedRecipe.instructions && selectedRecipe.instructions.length > 0 && (
+                  <div className="space-y-4 mt-6">
+                    <h3 className="font-display text-[#8B6F47] uppercase text-sm tracking-widest border-b-2 border-[#8B6F47]/10 pb-2">
+                      Instructions
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2">
+                      {selectedRecipe.instructions.map((step: string, i: number) => (
+                        <div key={i} className="flex items-start gap-3 bg-white p-3 border-2 border-[#8B6F47]/20">
+                          <span className="text-[#8B6F47] font-bold flex-shrink-0 w-5">{i + 1}.</span>
+                          <span className="text-[#8B6F47] text-sm leading-relaxed">{step}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Fixed footer */}
+              <div className="p-8 pt-6 border-t-4 border-dashed border-[#8B6F47]/20 flex justify-center flex-shrink-0">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -226,9 +307,10 @@ function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
       whileTap={{ y: 1 }}
       className={`
         w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-        ${active 
-          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+        ${
+          active
+            ? "bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]"
+            : "bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]"
         }
       `}
       title={tooltip}

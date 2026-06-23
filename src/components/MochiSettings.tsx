@@ -17,7 +17,7 @@ export function MochiSettings({
   onToggleSleep,
   isSleeping 
 }: MochiSettingsProps) {
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted] = useState(true);
 
   return (
     <AnimatePresence>

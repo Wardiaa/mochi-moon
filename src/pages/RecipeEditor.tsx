@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Save, Plus, Trash2, Gamepad2 } from "lucide-react";
 import { Home as HomeIcon, Coffee, Cherry } from "lucide-react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { navigateTo } from "../utils/navigation";
 
 export default function RecipeEditor() {
@@ -10,6 +10,23 @@ export default function RecipeEditor() {
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState([""]);
   const [instructions, setInstructions] = useState([""]);
+  const [editingSavedIndex, setEditingSavedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const editData = localStorage.getItem("mochi-editing-recipe");
+    if (editData) {
+      try {
+        const { recipe, savedIndex } = JSON.parse(editData);
+        setName(recipe.name || "");
+        setDescription(recipe.description || "");
+        setIngredients(recipe.ingredients?.length ? recipe.ingredients : [""]);
+        setInstructions(recipe.instructions?.length ? recipe.instructions : [""]);
+        setEditingSavedIndex(savedIndex);
+      } catch {
+        // ignore parse errors
+      }
+    }
+  }, []);
 
   const addIngredient = () => setIngredients([...ingredients, ""]);
   const removeIngredient = (index: number) => {
@@ -37,52 +54,59 @@ export default function RecipeEditor() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const recipe = {
       name,
       description,
-      ingredients: ingredients.filter(ing => ing.trim() !== ""),
-      instructions: instructions.filter(inst => inst.trim() !== ""),
+      ingredients: ingredients.filter((ing) => ing.trim() !== ""),
+      instructions: instructions.filter((inst) => inst.trim() !== ""),
       difficulty: "Medium",
-      time: "30 mins"
+      time: "30 mins",
     };
-    
-    const existingRecipes = JSON.parse(localStorage.getItem('mochi-recipes') || '[]');
-    existingRecipes.push(recipe);
-    localStorage.setItem('mochi-recipes', JSON.stringify(existingRecipes));
+
+    const existingRecipes = JSON.parse(localStorage.getItem("mochi-recipes") || "[]");
+
+    if (editingSavedIndex !== null) {
+      existingRecipes[editingSavedIndex] = recipe;
+    } else {
+      existingRecipes.push(recipe);
+    }
+
+    localStorage.setItem("mochi-recipes", JSON.stringify(existingRecipes));
+    localStorage.removeItem("mochi-editing-recipe");
     navigateTo("/recipes");
   };
 
+  const isEditing = editingSavedIndex !== null;
+
   return (
     <div className="min-h-screen bg-[#FFF8F0] p-0 m-0 w-screen h-screen font-pixel">
-      
       <div className="window-resize-handle resize-right"></div>
       <div className="window-resize-handle resize-bottom"></div>
       <div className="window-resize-handle resize-corner"></div>
-      
+
       <div className="w-full h-full bg-[#FFF8F0] flex flex-col overflow-hidden">
-        
         <div className="h-12 bg-[#B4FFE6] border-b-4 border-[#8B6F47] flex items-center justify-between px-4 select-none draggable">
           <div className="flex items-center gap-2">
             <Gamepad2 className="text-[#8B6F47]" />
             <span className="font-display text-[#8B6F47] text-sm md:text-base tracking-tight pt-1">
-              Mochi Moon Cafe - Secret Recipe Editor
+              Mochi Moon Cafe - {isEditing ? "Edit Recipe" : "Secret Recipe Editor"}
             </span>
           </div>
           <div className="flex gap-2 non-draggable">
-            <button 
+            <button
               className="w-6 h-6 bg-[#B4FFE6] border-2 border-[#8B6F47] hover:bg-[#FFF4B4] flex items-center justify-center transition-colors"
               onClick={() => (window as any).electronAPI?.minimizeApp?.()}
             >
               <span className="text-[#8B6F47] text-xs mb-2">_</span>
             </button>
-            <button 
+            <button
               className="w-6 h-6 bg-[#D7C4FF] border-2 border-[#8B6F47] hover:bg-white flex items-center justify-center transition-colors"
               onClick={() => (window as any).electronAPI?.maximizeApp?.()}
             >
               <span className="text-[#8B6F47] text-xs">&#9633;</span>
             </button>
-            <button 
+            <button
               className="w-6 h-6 bg-[#FFC4DD] border-2 border-[#8B6F47] hover:bg-red-400 flex items-center justify-center transition-colors"
               onClick={() => (window as any).electronAPI?.closeApp?.()}
             >
@@ -99,8 +123,11 @@ export default function RecipeEditor() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-8 graphy-bg">
-            <button 
-              onClick={() => navigateTo("/recipes")}
+            <button
+              onClick={() => {
+                localStorage.removeItem("mochi-editing-recipe");
+                navigateTo("/recipes");
+              }}
               className="flex items-center gap-2 text-[#8B6F47] mb-8 hover:translate-x-[-4px] transition-transform uppercase text-xs font-bold"
             >
               <ArrowLeft size={16} /> Back to Book
@@ -140,7 +167,7 @@ export default function RecipeEditor() {
                     <Plus size={20} />
                   </button>
                 </div>
-                
+
                 <div className="space-y-3">
                   {ingredients.map((ing, i) => (
                     <div key={i} className="flex gap-3">
@@ -175,7 +202,7 @@ export default function RecipeEditor() {
                     <Plus size={20} />
                   </button>
                 </div>
-                
+
                 <div className="space-y-3">
                   {instructions.map((step, i) => (
                     <div key={i} className="flex gap-3">
@@ -206,7 +233,7 @@ export default function RecipeEditor() {
                   type="submit"
                   className="w-full py-4 bg-[#D7C4FF] border-4 border-[#8B6F47] shadow-[6px_6px_0_0_#8B6F47] text-[#8B6F47] font-display text-xl flex items-center justify-center gap-3 uppercase"
                 >
-                  <Save /> Save Secret Recipe
+                  <Save /> {isEditing ? "Update Recipe" : "Save Secret Recipe"}
                 </motion.button>
               </div>
             </form>
@@ -232,9 +259,10 @@ function NavButton({ icon, active, tooltip, href }: NavButtonProps) {
       whileTap={{ y: 1 }}
       className={`
         w-10 h-10 flex items-center justify-center rounded-sm border-2 transition-all
-        ${active 
-          ? 'bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]' 
-          : 'bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]'
+        ${
+          active
+            ? "bg-[#FFC4DD] border-[#8B6F47] shadow-[2px_2px_0_0_#8B6F47]"
+            : "bg-white border-transparent hover:border-[#8B6F47] hover:bg-[#FFF8F0]"
         }
       `}
       title={tooltip}

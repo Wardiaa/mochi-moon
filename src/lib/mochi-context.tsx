@@ -60,9 +60,7 @@ export function MochiProvider({ children }: { children: React.ReactNode }) {
     setIsSleeping((prev: any) => !prev);
   };
 
-  const resetPosition = () => {
-    setPosition({ x: 20, y: 20 });
-  };
+  const resetPosition = () => setPosition({ x: 10, y: window.innerHeight - 110 });
 
   return (
     <MochiContext.Provider value={{
